@@ -105,3 +105,26 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
     // be careful deferring Queries if you are using transactions
     defer insert.Close()
 }
+
+func InsertProject(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	guid := uuid.New() // education guid
+	project_id := guid.String()	
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myProject models.Project
+
+	json.Unmarshal(reqBody, &myProject)
+	json.NewEncoder(w).Encode(myProject)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("INSERT INTO user_projects (project_guid, user_guid, title, description, technologies) VALUES (" + "'" +  project_id + "'" + "," + "'" + myProject.User_Guid + "'" + "," + "'" + myProject.Title + "'" + "," + "'" + myProject.Description + "'"  + "," + "'" + myProject.Technologies + "'"  + ");")
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
