@@ -10,7 +10,7 @@ import (
 
 // Connect DB
 func ConnectDB() *sql.DB {
-	DB, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/venture")
+	DB, err := sql.Open("mysql", "venture:somePass@tcp(127.0.0.1:3306)/venture?parseTime=true")
 
 	// if there is an error opening the connection, handle it
 	if err != nil {

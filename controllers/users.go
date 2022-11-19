@@ -7,11 +7,12 @@ import (
 	// "log"
 	"net/http"
 	"main/models"
+	"main/utils"
 	// "strings"
 	// "sync"
 
 	// "github.com/dgrijalva/jwt-go"
-	// "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	"main/db"
     _ "github.com/go-sql-driver/mysql"
     "github.com/google/uuid"
@@ -50,7 +51,7 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_details (user_guid, email, password, secret_key) VALUES (" + "'" +  id + "'" + "," + "'" + myUser.Email + "'" + "," + "'" + myUser.Password + "'" + ", '')")
+	insert, err := DB.Query("INSERT INTO user_details (user_guid, email, password, secret_key) VALUES (?, ?, ?, ?)", id, myUser.Email, myUser.Password, myUser.Secret_Key)
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -128,3 +129,81 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
     // be careful deferring Queries if you are using transactions
     defer insert.Close()
 }
+
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM user_details WHERE user_guid=?",guid)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+
+
+func GetExperiences(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM user_experience WHERE user_guid=?",guid)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+func GetEducations(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM user_education WHERE user_guid=?",guid)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+
+func GetProjects(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM user_projects WHERE user_guid=?",guid)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+

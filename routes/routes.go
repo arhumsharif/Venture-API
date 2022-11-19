@@ -27,5 +27,9 @@ func HandleRequests() {
 	Router.HandleFunc("/education", controllers.InsertEducation).Methods("POST")
 	Router.HandleFunc("/experience", controllers.InsertExperience).Methods("POST")
 	Router.HandleFunc("/projects", controllers.InsertProject).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8000", Router))
+	Router.HandleFunc("/user/{guid}", controllers.GetUsers).Methods("GET")
+	Router.HandleFunc("/projects/{guid}", controllers.GetProjects).Methods("GET")
+	Router.HandleFunc("/education/{guid}", controllers.GetEducations).Methods("GET")
+	Router.HandleFunc("/experience/{guid}", controllers.GetExperiences).Methods("GET")
+	log.Fatal(http.ListenAndServe(":3000", Router))
 }
