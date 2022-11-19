@@ -19,25 +19,6 @@ import (
     "database/sql"
 )
 
-
-func PrintHello(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hello World!")
-	id := uuid.New()
-    fmt.Println(id.String())
-	// w.Header().Set("Content-Type", "application/json")
-	// var myBook Book
-	// myBook.Name = "Witcher"
-	// myBook.Author = "Arhum"
-	// // json.NewEncoder(w).Encode(myBook)
-	// jData, err := json.Marshal(myBook)
-	// if err != nil {
-	// 	// handle error
-	// }
-	// fmt.Println(jData)
-	// w.write(jData)
-}
-
-
 func InsertUser(w http.ResponseWriter, r *http.Request) {
 	// Get Body
 	guid := uuid.New() // user guid
@@ -205,5 +186,182 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 	w.Write(finalData)
 	defer DB.Close()
 }
+
+
+
+
+// ------------------------ Delete Routes ----------------------------
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myUser models.User
+
+	json.Unmarshal(reqBody, &myUser)
+	json.NewEncoder(w).Encode(myUser)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_details set is_deleted = '1' WHERE user_guid =" + "'" + myUser.User_Guid + "'" + ";")
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+func DeleteEducation(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myEducation models.Education
+
+	json.Unmarshal(reqBody, &myEducation)
+	json.NewEncoder(w).Encode(myEducation)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_education set is_deleted = '1' WHERE education_guid =" + "'" + myEducation.Education_Guid + "'" + ";")
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+func DeleteExperience(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myExperience models.Experience
+
+	json.Unmarshal(reqBody, &myExperience)
+	json.NewEncoder(w).Encode(myExperience)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_experience set is_deleted = '1' WHERE experience_guid =" + "'" + myExperience.Experience_Guid + "'" + ";")
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+func DeleteProject(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myProject models.Project
+
+	json.Unmarshal(reqBody, &myProject)
+	json.NewEncoder(w).Encode(myProject)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_projects set is_deleted = '1' WHERE project_guid =" + "'" + myProject.Project_Guid + "'" + ";")
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+// ------------------- Put Routes ---------------------
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myUser models.User
+
+	json.Unmarshal(reqBody, &myUser)
+	json.NewEncoder(w).Encode(myUser)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_details set email =" + "'" + myUser.Email  + "'" + ", password = " + "'" + myUser.Password  + "'" +  " WHERE user_guid =" + "'" + myUser.User_Guid + "'" + ";")
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+func UpdateEducation(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myEducation models.Education
+
+	json.Unmarshal(reqBody, &myEducation)
+	json.NewEncoder(w).Encode(myEducation)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_education set school = ? , user_from = ? , user_to = ? , degree = ? WHERE education_guid = ?;", myEducation.School, myEducation.User_From, myEducation.User_To, myEducation.Degree, myEducation.Education_Guid)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+func UpdateExperience(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myExperience models.Experience
+
+	json.Unmarshal(reqBody, &myExperience)
+	json.NewEncoder(w).Encode(myExperience)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_experience set job_title = ? , job_description = ? , company_name = ? , user_from = ? , user_to = ? WHERE experience_guid = ? ", myExperience.Job_Title, myExperience.Job_Description, myExperience.Company_Name, myExperience.User_From, myExperience.User_To, myExperience.Experience_Guid)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+func UpdateProject(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myProject models.Project
+
+	json.Unmarshal(reqBody, &myProject)
+	json.NewEncoder(w).Encode(myProject)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_projects set title = ? , description = ? , technologies = ? WHERE project_guid = ?", myProject.Title, myProject.Description, myProject.Technologies, myProject.Project_Guid)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        panic(err.Error())
+    }
+    // be careful deferring Queries if you are using transactions
+    defer insert.Close()
+}
+
+
 
 
