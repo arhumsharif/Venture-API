@@ -9,14 +9,14 @@ import (
 // var DB *sql.DB
 
 // Connect DB
-	func ConnectDB() *sql.DB {
-		DB, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/venture")
-	
-		// if there is an error opening the connection, handle it
-		if err != nil {
-			panic(err.Error())
-		} else {
-			fmt.Println("DB Connected")
-		}
-		return DB
+func ConnectDB() *sql.DB {
+	DB, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/venture")
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("DB Connected")
 	}
+	return DB
+}

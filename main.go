@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"main/routes"
 	"main/db"
     _ "github.com/go-sql-driver/mysql"
@@ -11,6 +12,7 @@ import (
 
 
 func main() {
+	fmt.Println(time.Now().Second())
 	fmt.Println("In Main")
 	var DB *sql.DB
 	DB = db.ConnectDB()
