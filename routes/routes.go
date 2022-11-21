@@ -58,5 +58,5 @@ func HandleRequests() {
 	Router.HandleFunc("/education", controllers.UpdateEducation).Methods("PUT")
 	Router.HandleFunc("/experience", controllers.UpdateExperience).Methods("PUT")
 	Router.HandleFunc("/projects", controllers.UpdateProject).Methods("PUT")	
-	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(originsOk, headersOk, methodsOk)(Router)))
+	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(originsOk, headersOk, methodsOk)(Router)))
 }

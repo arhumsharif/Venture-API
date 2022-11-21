@@ -369,7 +369,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("UPDATE user_details set email =" + "'" + myUser.Email  + "'" + ", password = " + "'" + myUser.Password  + "'" +  " WHERE user_guid =" + "'" + myUser.User_Guid + "'" + ";")
+	insert, err := DB.Query("UPDATE user_details set email = ?, password = ? WHERE user_guid = ? ", myUser.Email, myUser.Password, myUser.User_Guid)
 
     // // if there is an error inserting, handle it
     if err != nil {
