@@ -45,7 +45,7 @@ func HandleRequests() {
 	Router.HandleFunc("/projects/{guid}", controllers.GetProjects).Methods("GET")
 	Router.HandleFunc("/education/{guid}", controllers.GetEducations).Methods("GET")
 	Router.HandleFunc("/experience/{guid}", controllers.GetExperiences).Methods("GET")
-	log.Fatal(http.ListenAndServe(":3000", Router))
+	// log.Fatal(http.ListenAndServe(":3000", Router))
 
 	// Delete Routes
 	Router.HandleFunc("/user", controllers.DeleteUser).Methods("DELETE")
@@ -58,6 +58,5 @@ func HandleRequests() {
 	Router.HandleFunc("/education", controllers.UpdateEducation).Methods("PUT")
 	Router.HandleFunc("/experience", controllers.UpdateExperience).Methods("PUT")
 	Router.HandleFunc("/projects", controllers.UpdateProject).Methods("PUT")	
-	// log.Fatal(http.ListenAndServe(":3000", Router))
 	log.Fatal(http.ListenAndServe(":3000", handlers.CORS(originsOk, headersOk, methodsOk)(Router)))
 }

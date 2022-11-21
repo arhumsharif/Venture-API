@@ -36,7 +36,7 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
 	// Send Response
@@ -46,7 +46,7 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 	jsonResponse, resErr := json.Marshal(response)
 
 	if resErr != nil {
-		panic(resErr.Error())
+		fmt.Println("Error:", resErr)
 	}
 	w.Write(jsonResponse)
     defer insert.Close()
@@ -69,7 +69,7 @@ func InsertEducation(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
 	// Send Response
@@ -79,7 +79,7 @@ func InsertEducation(w http.ResponseWriter, r *http.Request) {
 	jsonResponse, resErr := json.Marshal(response)
 
 	if resErr != nil {
-		panic(resErr.Error())
+		fmt.Println("Error:", resErr)
 	}
 	w.Write(jsonResponse)
     defer insert.Close()
@@ -102,7 +102,7 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
 	// Send Response
@@ -112,7 +112,7 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
 	jsonResponse, resErr := json.Marshal(response)
 
 	if resErr != nil {
-		panic(resErr.Error())
+		fmt.Println("Error:", resErr)
 	}
 	w.Write(jsonResponse)
     defer insert.Close()
@@ -135,7 +135,7 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
 	// Send Response
@@ -145,7 +145,7 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
 	jsonResponse, resErr := json.Marshal(response)
 
 	if resErr != nil {
-		panic(resErr.Error())
+		fmt.Println("Error:", resErr)
 	}
 	w.Write(jsonResponse)
     defer insert.Close()
@@ -247,9 +247,19 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Deleted"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -268,9 +278,19 @@ func DeleteEducation(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Deleted"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -289,9 +309,19 @@ func DeleteExperience(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Deleted"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -310,9 +340,19 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Deleted"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -333,9 +373,19 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Updated"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -354,9 +404,19 @@ func UpdateEducation(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Updated"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -375,9 +435,19 @@ func UpdateExperience(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Updated"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -396,9 +466,19 @@ func UpdateProject(w http.ResponseWriter, r *http.Request) {
 
     // // if there is an error inserting, handle it
     if err != nil {
-        panic(err.Error())
+        fmt.Println("Error:", err)
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Updated"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
