@@ -39,6 +39,16 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		panic(resErr.Error())
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -62,6 +72,16 @@ func InsertEducation(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		panic(resErr.Error())
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -85,6 +105,16 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		panic(resErr.Error())
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 
@@ -108,6 +138,16 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
         panic(err.Error())
     }
     // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		panic(resErr.Error())
+	}
+	w.Write(jsonResponse)
     defer insert.Close()
 }
 

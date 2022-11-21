@@ -33,3 +33,7 @@ type Project struct {
 	Description string `json:"description"`
 	Technologies string `json:"technologies"`
 }
+
+type Response struct {
+	Message string `json:"message"`
+}
