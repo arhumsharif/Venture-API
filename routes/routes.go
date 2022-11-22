@@ -63,6 +63,7 @@ func HandleRequests() {
 
 	// Put Routes
 	Router.HandleFunc("/user", controllers.UpdateUser).Methods("PUT")
+	Router.HandleFunc("/user/edit", controllers.UpdateUserDetail).Methods("PUT")
 	Router.HandleFunc("/education", controllers.UpdateEducation).Methods("PUT")
 	Router.HandleFunc("/experience", controllers.UpdateExperience).Methods("PUT")
 	Router.HandleFunc("/projects", controllers.UpdateProject).Methods("PUT")	

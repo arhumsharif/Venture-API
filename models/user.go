@@ -4,6 +4,12 @@ type User struct{
 	User_Guid string `json:"user_guid"`
 	Email string `json:"email"`
 	Password string `json:"password"`
+	Name string `json:"name"`
+	Phone string `json:"phone"`
+	Address string `json:"address"`
+	City string `json:"city"`
+	Country string `json:"country"`
+	DOB string `json:"dob"`
 	Secret_Key string `json:"secret_key"`
 }
 

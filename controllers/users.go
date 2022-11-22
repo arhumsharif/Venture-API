@@ -559,6 +559,37 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
 // ------------------- Put Routes ---------------------
 
+func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myUser models.User
+
+	json.Unmarshal(reqBody, &myUser)
+	json.NewEncoder(w).Encode(myUser)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("UPDATE user_details set name = ?, phone = ?, address = ?, city = ?, country = ?, dob = ? WHERE user_guid = ? ", myUser.Name, myUser.Phone, myUser.Address, myUser.City, myUser.Country, myUser.DOB ,myUser.User_Guid)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+    // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Updated"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
+    defer insert.Close()
+}
+
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	// Get Body
 	var DB *sql.DB
