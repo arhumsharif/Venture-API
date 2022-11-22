@@ -34,6 +34,31 @@ type Project struct {
 	Technologies string `json:"technologies"`
 }
 
+type Job struct {
+	Job_Type_Guid string `json:"job_type_guid"`
+	Job_Title string `json:"job_title"`
+}
+
+type Skill struct {
+	Skill_Guid string `json:"skill_guid"`
+	Job_Type_Guid string `json:"job_type_guid"`
+	Skill_Title string `json:"skill_title"`
+}
+
+type UserJob struct {
+	User_Job_Guid string `json:"user_job_guid"`
+	User_Guid string `json:"user_guid"`
+	Job_Type_Guid string `json:"job_type_guid"`
+	Experience int `json:"experience"`
+}
+
+type JobSkill struct {
+	Job_Skill_Guid string `json:"job_skill_guid"`
+	User_Job_Guid string `json:"user_job_guid"`
+	Skill_Guid string `json:"skill_guid"`
+	Experience int `json:"experience"`
+}
+
 type Response struct {
 	Message string `json:"message"`
 }

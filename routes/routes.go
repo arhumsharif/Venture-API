@@ -39,12 +39,20 @@ func HandleRequests() {
 	Router.HandleFunc("/education", controllers.InsertEducation).Methods("POST")
 	Router.HandleFunc("/experience", controllers.InsertExperience).Methods("POST")
 	Router.HandleFunc("/projects", controllers.InsertProject).Methods("POST")
+	Router.HandleFunc("/job", controllers.InsertJob).Methods("POST")
+	Router.HandleFunc("/skill", controllers.InsertSkill).Methods("POST")
+	Router.HandleFunc("/user/job", controllers.InsertUserJob).Methods("POST")
+	Router.HandleFunc("/job/skill", controllers.InsertJobSkill).Methods("POST")
 
 	// Get Routes
 	Router.HandleFunc("/user/{guid}", controllers.GetUsers).Methods("GET")
 	Router.HandleFunc("/projects/{guid}", controllers.GetProjects).Methods("GET")
 	Router.HandleFunc("/education/{guid}", controllers.GetEducations).Methods("GET")
 	Router.HandleFunc("/experience/{guid}", controllers.GetExperiences).Methods("GET")
+	Router.HandleFunc("/job", controllers.GetJobs).Methods("GET")
+	Router.HandleFunc("/skill", controllers.GetSkills).Methods("GET")
+	Router.HandleFunc("/user/job/{guid}", controllers.GetUserJobs).Methods("GET")
+	Router.HandleFunc("/job/skill/{guid}", controllers.GetJobSkills).Methods("GET")
 	// log.Fatal(http.ListenAndServe(":3000", Router))
 
 	// Delete Routes

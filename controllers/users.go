@@ -152,6 +152,145 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func InsertJob(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	guid := uuid.New() // job guid
+	job_id := guid.String()	
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myJob models.Job
+
+	json.Unmarshal(reqBody, &myJob)
+	json.NewEncoder(w).Encode(myJob)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("INSERT INTO job_type (job_type_guid, job_title) VALUES (?, ?)", job_id, myJob.Job_Title)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+    // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
+    defer insert.Close()
+}
+
+
+func InsertSkill(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	guid := uuid.New() // job guid
+	skill_id := guid.String()	
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var mySkill models.Skill
+
+	json.Unmarshal(reqBody, &mySkill)
+	json.NewEncoder(w).Encode(mySkill)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("INSERT INTO skills (skill_guid, job_type_guid, skill_title) VALUES (?, ?, ?)", skill_id, mySkill.Job_Type_Guid, mySkill.Skill_Title)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+    // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
+    defer insert.Close()
+}
+
+
+func InsertUserJob(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	guid := uuid.New() // job guid
+	user_job_id := guid.String()	
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myUserJob models.UserJob
+
+	json.Unmarshal(reqBody, &myUserJob)
+	json.NewEncoder(w).Encode(myUserJob)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, myUserJob.User_Guid, myUserJob.Job_Type_Guid, myUserJob.Experience)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+    // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
+    defer insert.Close()
+}
+
+
+func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
+	// Get Body
+	guid := uuid.New() // job guid
+	job_skill_id := guid.String()	
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myJobSkill models.JobSkill
+
+	json.Unmarshal(reqBody, &myJobSkill)
+	json.NewEncoder(w).Encode(myJobSkill)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("INSERT INTO job_skill (job_skill_guid, user_job_guid, skill_guid, experience) VALUES (?, ?, ?, ?)", job_skill_id, myJobSkill.User_Job_Guid, myJobSkill.Skill_Guid, myJobSkill.Experience)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+    // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
+    defer insert.Close()
+}
+
+
+// ----------------------------Get Routes------------------------------
+
+
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	guid := vars["guid"]
@@ -227,7 +366,69 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 	defer DB.Close()
 }
 
+func GetJobs(w http.ResponseWriter, r *http.Request) {
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM job_type")
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
 
+func GetSkills(w http.ResponseWriter, r *http.Request) {
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM skills")
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+func GetUserJobs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM user_job WHERE user_guid=?",guid)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+func GetJobSkills(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM job_skill WHERE user_job_guid=?",guid)
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
 
 
 // ------------------------ Delete Routes ----------------------------
