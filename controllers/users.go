@@ -561,6 +561,10 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 // ------------------- Put Routes ---------------------
 
 func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
+	// Headers set
+	w.Header().Set("Content-Type", "text/html; charset=ascii")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type,access-control-allow-origin, access-control-allow-headers")  
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -592,6 +596,10 @@ func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	// Headers set
+	w.Header().Set("Content-Type", "text/html; charset=ascii")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers","Content-Type,access-control-allow-origin, access-control-allow-headers") 
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
