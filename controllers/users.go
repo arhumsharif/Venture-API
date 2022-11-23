@@ -243,6 +243,7 @@ func InsertUserJob(w http.ResponseWriter, r *http.Request) {
 	// Send Response
 	var response models.Response
 	response.Message = "Success"
+	response.Id = user_job_id
 	var jsonResponse []byte
 	jsonResponse, resErr := json.Marshal(response)
 

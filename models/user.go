@@ -52,7 +52,7 @@ type Skill struct {
 }
 
 type UserJob struct {
-	User_Job_Guid string `json:"user_job_guid"`
+	User_Job_Guid string `json:"user_job_guid"` // to be sent for using
 	User_Guid string `json:"user_guid"`
 	Job_Type_Guid string `json:"job_type_guid"`
 	Experience int `json:"experience"`
@@ -67,4 +67,5 @@ type JobSkill struct {
 
 type Response struct {
 	Message string `json:"message"`
+	Id string `json:"id"`
 }
