@@ -16,7 +16,9 @@ import (
 	"main/db"
     _ "github.com/go-sql-driver/mysql"
     "github.com/google/uuid"
+	"github.com/dgrijalva/jwt-go"
     "database/sql"
+	"time"
 )
 
 func InsertUser(w http.ResponseWriter, r *http.Request) {
@@ -291,6 +293,102 @@ func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
 
 // ----------------------------Get Routes------------------------------
 
+// Authenticate
+var jwtKey = []byte("secret_key")
+func Authenticate(w http.ResponseWriter, r *http.Request) {
+	// make an object of credentials
+	var credentials models.Credentials
+	err := json.NewDecoder(r.Body).Decode(&credentials)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	// run query to check for credentials
+	DB := db.ConnectDB()
+	rows, queryerr:= DB.Query("SELECT user_guid, email, password, secret_key FROM user_details WHERE email=? AND password=?",credentials.Email, credentials.Password)
+	if queryerr != nil {
+		fmt.Println("Error:", queryerr)
+	}
+
+	var myuser models.User
+	for rows.Next() {
+
+        err = rows.Scan(&myuser.User_Guid, &myuser.Email, &myuser.Password, &myuser.Secret_Key)
+        if err != nil {
+            fmt.Println("err:", err) // proper error handling instead of panic in your app
+        }
+    }
+	if myuser.User_Guid == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Data is in myuser
+	expirationTime := time.Now().Add(time.Minute * 5)
+
+	claims := &models.Claims{
+		Username: myuser.Email,
+		User_Guid: myuser.User_Guid,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, tokenerr := token.SignedString(jwtKey)
+
+	if tokenerr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(tokenString)
+	// Send Response
+	// var response models.Response
+	// response.Message = tokenString
+	// var jsonResponse []byte
+	// jsonResponse, resErr := json.Marshal(response)
+
+	// if resErr != nil {
+	// 	fmt.Println("Error:", resErr)
+	// }
+
+	defer DB.Close()
+	// w.Write(jsonResponse)
+	// Now check for result
+	verify(tokenString, w, r)
+}
+
+// Verify Function to check if token is still defined
+func verify(token string, w http.ResponseWriter, r *http.Request) {
+
+	claims := &models.Claims{}
+
+	tkn, err := jwt.ParseWithClaims(token, claims,
+		func(t *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !tkn.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	w.Write([]byte(fmt.Sprintf("Hello, %s", claims.Username)))
+}
+
+
+// ---------------------------------------------------------------------
+
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -561,10 +659,6 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 // ------------------- Put Routes ---------------------
 
 func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
-	// Headers set
-	w.Header().Set("Content-Type", "text/html; charset=ascii")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers","Content-Type,access-control-allow-origin, access-control-allow-headers")  
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -596,10 +690,6 @@ func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	// Headers set
-	w.Header().Set("Content-Type", "text/html; charset=ascii")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers","Content-Type,access-control-allow-origin, access-control-allow-headers") 
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)

@@ -35,6 +35,7 @@ func HandleRequests() {
 	// with error handling
 	
 	// Router.HandleFunc("/", controllers.PrintHello)
+	Router.HandleFunc("/authenticate", controllers.Authenticate).Methods("POST")
 	Router.HandleFunc("/user", controllers.InsertUser).Methods("POST")
 	Router.HandleFunc("/education", controllers.InsertEducation).Methods("POST")
 	Router.HandleFunc("/experience", controllers.InsertExperience).Methods("POST")

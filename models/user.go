@@ -1,5 +1,9 @@
 package models
 
+import (
+	"github.com/dgrijalva/jwt-go"
+)
+
 type User struct{
 	User_Guid string `json:"user_guid"`
 	Email string `json:"email"`
@@ -69,3 +73,18 @@ type Response struct {
 	Message string `json:"message"`
 	Id string `json:"id"`
 }
+
+// credentials 
+
+type Credentials struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
+type Claims struct {
+	Username string `json:"username"`
+	User_Guid string `json:"user_guid"`
+	jwt.StandardClaims
+}
+
+
