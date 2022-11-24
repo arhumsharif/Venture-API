@@ -21,6 +21,93 @@ import (
 	"time"
 )
 
+// ------------------------------------Authentication --------------------------------
+
+// Authenticate
+var jwtKey = []byte("secret_key")
+func Authenticate(w http.ResponseWriter, r *http.Request) {
+	// make an object of credentials
+	var credentials models.Credentials
+	err := json.NewDecoder(r.Body).Decode(&credentials)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	// run query to check for credentials
+	DB := db.ConnectDB()
+	rows, queryerr:= DB.Query("SELECT user_guid, email, password, secret_key FROM user_details WHERE email=? AND password=?",credentials.Email, credentials.Password)
+	if queryerr != nil {
+		fmt.Println("Error:", queryerr)
+	}
+
+	var myuser models.User
+	for rows.Next() {
+
+        err = rows.Scan(&myuser.User_Guid, &myuser.Email, &myuser.Password, &myuser.Secret_Key)
+        if err != nil {
+            fmt.Println("err:", err) // proper error handling instead of panic in your app
+        }
+    }
+	if myuser.User_Guid == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Secret Key
+	myKey := utils.GenerateSecretKey()
+	keyJWT := []byte(myKey)
+
+	// Data is in myuser
+	expirationTime := time.Now().Add(time.Minute * 60)
+
+	claims := &models.Claims{
+		Username: myuser.Email,
+		User_Guid: myuser.User_Guid,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, tokenerr := token.SignedString(keyJWT)
+
+	if tokenerr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Update the Query to store secret_key
+	update, updateerr := DB.Query("UPDATE user_details set secret_key = ? WHERE user_guid = ? ", myKey, myuser.User_Guid)
+
+    // // if there is an error inserting, handle it
+    if updateerr != nil {
+        fmt.Println("Error:", updateerr)
+    }
+	defer update.Close()
+
+
+	fmt.Println(tokenString)
+	tokenString = tokenString + " " + myuser.User_Guid
+	// Send Response
+	var response models.Response
+	response.Message = tokenString
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+
+	defer DB.Close()
+	w.Write(jsonResponse)
+	// verify(tokenString, w, r)
+}
+
+
+
+
+// ---------------------------------------------------------------------
+
 func InsertUser(w http.ResponseWriter, r *http.Request) {
 	// Get Body
 	guid := uuid.New() // user guid
@@ -293,104 +380,23 @@ func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
 
 // ----------------------------Get Routes------------------------------
 
-// Authenticate
-var jwtKey = []byte("secret_key")
-func Authenticate(w http.ResponseWriter, r *http.Request) {
-	// make an object of credentials
-	var credentials models.Credentials
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	// run query to check for credentials
-	DB := db.ConnectDB()
-	rows, queryerr:= DB.Query("SELECT user_guid, email, password, secret_key FROM user_details WHERE email=? AND password=?",credentials.Email, credentials.Password)
-	if queryerr != nil {
-		fmt.Println("Error:", queryerr)
-	}
-
-	var myuser models.User
-	for rows.Next() {
-
-        err = rows.Scan(&myuser.User_Guid, &myuser.Email, &myuser.Password, &myuser.Secret_Key)
-        if err != nil {
-            fmt.Println("err:", err) // proper error handling instead of panic in your app
-        }
-    }
-	if myuser.User_Guid == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	// Data is in myuser
-	expirationTime := time.Now().Add(time.Minute * 5)
-
-	claims := &models.Claims{
-		Username: myuser.Email,
-		User_Guid: myuser.User_Guid,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, tokenerr := token.SignedString(jwtKey)
-
-	if tokenerr != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Println(tokenString)
-	// Send Response
-	// var response models.Response
-	// response.Message = tokenString
-	// var jsonResponse []byte
-	// jsonResponse, resErr := json.Marshal(response)
-
-	// if resErr != nil {
-	// 	fmt.Println("Error:", resErr)
-	// }
-
-	defer DB.Close()
-	// w.Write(jsonResponse)
-	// Now check for result
-	verify(tokenString, w, r)
-}
-
-// Verify Function to check if token is still defined
-func verify(token string, w http.ResponseWriter, r *http.Request) {
-
-	claims := &models.Claims{}
-
-	tkn, err := jwt.ParseWithClaims(token, claims,
-		func(t *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		})
-
-	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	if !tkn.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	w.Write([]byte(fmt.Sprintf("Hello, %s", claims.Username)))
-}
-
-
-// ---------------------------------------------------------------------
 
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	userGuid := ""
+	// CheckAuth 
+	status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		userGuid = utils.GetUserGuid(authorization)
+	}
+
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	vars := mux.Vars(r)
 	guid := vars["guid"]
 	fmt.Println("guid", guid)

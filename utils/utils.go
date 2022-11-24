@@ -2,12 +2,20 @@ package utils
 
 
 import (
+	"main/db"
     "database/sql"
     "encoding/json"
+	"github.com/dgrijalva/jwt-go"
+	"main/models"
+    "strings"
+	"net/http"
     "fmt"
+    "time"
     "reflect"
-
+    "math/rand"
     "github.com/go-sql-driver/mysql"
+    
+
 )
 
 // Additional scan types returned by the MySQL driver. I haven't looked at
@@ -101,4 +109,87 @@ func SQLToJSON(rows *sql.Rows) ([]byte, error) {
     }
 
     return json.Marshal(data)
+}
+
+// generate secret key
+func GenerateSecretKey() string {
+    key := ""
+    x1 := rand.NewSource(time.Now().UnixNano())
+    y1 := rand.New(x1)
+    for _, i := range []int{1, 2, 3, 4, 5, 6, 7, 8} {
+        fmt.Println(i)
+        asciiValue := y1.Intn(90-65) + 65
+        character := rune(asciiValue)
+        key = key + string(character)
+    }
+    return key
+}
+
+// Verify Function to check if token is still defined
+func CheckAuth(header string, w http.ResponseWriter, r *http.Request) bool {
+    // var jwtKey = []byte("secret_key")
+
+    // getting token and user guid
+    separateHeaders := strings.Fields(header)
+    if len(separateHeaders) <= 1 {
+        return false
+    }
+    token := separateHeaders[1]
+    userGuid := separateHeaders[2]
+
+    fmt.Println("token: ", token)
+    fmt.Println("userguid: ", userGuid)
+
+    // Search Secret key
+    DB := db.ConnectDB()
+	rows, queryerr:= DB.Query("SELECT secret_key FROM user_details WHERE user_guid = ?",userGuid)
+	if queryerr != nil {
+		fmt.Println("Error:", queryerr)
+	}
+
+	var myuser models.User
+	for rows.Next() {
+
+        newerr := rows.Scan(&myuser.Secret_Key)
+        if newerr != nil {
+            fmt.Println("err:", newerr) 
+        }
+    }
+    
+    jwtKey := []byte (myuser.Secret_Key)
+    // ----------------
+
+	claims := &models.Claims{}
+
+	tkn, err := jwt.ParseWithClaims(token, claims,
+		func(t *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+            fmt.Println("Error in Signature")
+            fmt.Println(err)
+			return false
+		}
+        fmt.Println("Some other error")
+        fmt.Println(err)
+		return false
+	}
+
+	if !tkn.Valid {
+        fmt.Println("Token not valid")
+		return false
+	}
+
+    return true
+	// w.Write([]byte(fmt.Sprintf("Hello, %s", claims.Username)))
+}
+
+//  Get UserGuid
+func GetUserGuid(header string) string {
+    // getting token and user guid
+    separateHeaders := strings.Fields(header)
+    userGuid := separateHeaders[2]
+    return userGuid
 }
