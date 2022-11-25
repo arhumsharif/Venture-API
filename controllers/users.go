@@ -422,7 +422,7 @@ func GetExperiences(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("guid", guid)
 	// get data against guid
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_experience WHERE user_guid=?",guid)
+	rows, err:= DB.Query("SELECT * FROM user_experience WHERE user_guid=? AND is_deleted = '0'",guid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -440,7 +440,7 @@ func GetEducations(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("guid", guid)
 	// get data against guid
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_education WHERE user_guid=?",guid)
+	rows, err:= DB.Query("SELECT * FROM user_education WHERE user_guid=? AND is_deleted = '0'",guid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -459,7 +459,7 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("guid", guid)
 	// get data against guid
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_projects WHERE user_guid=?",guid)
+	rows, err:= DB.Query("SELECT * FROM user_projects WHERE user_guid=? AND is_deleted = '0'",guid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
