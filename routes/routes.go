@@ -11,7 +11,7 @@ import (
 	// "sync"
 	// "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/handlers"
+	"github.com/rs/cors"
 
 )
 
@@ -26,10 +26,6 @@ func HandleRequests() {
 	fmt.Println("In Routes")
 	Router := mux.NewRouter().StrictSlash(true)
 
-	// Where ORIGIN_ALLOWED is like `scheme://dns[:port]`, or `*` (insecure)
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// start server listen
 	// with error handling
@@ -68,5 +64,13 @@ func HandleRequests() {
 	Router.HandleFunc("/education", controllers.UpdateEducation).Methods("PUT")
 	Router.HandleFunc("/experience", controllers.UpdateExperience).Methods("PUT")
 	Router.HandleFunc("/projects", controllers.UpdateProject).Methods("PUT")	
-	log.Fatal(http.ListenAndServe(":8000", handlers.CORS(originsOk, headersOk, methodsOk)(Router)))
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "DELETE", "POST", "PUT"},
+	})
+
+	handler := c.Handler(Router)
+	log.Fatal(http.ListenAndServe(":8000", handler))
 }
