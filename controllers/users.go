@@ -417,6 +417,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 
 func GetExperiences(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("In Experience")
 	vars := mux.Vars(r)
 	guid := vars["guid"]
 	fmt.Println("guid", guid)
@@ -435,6 +436,7 @@ func GetExperiences(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetEducations(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("In Education")
 	vars := mux.Vars(r)
 	guid := vars["guid"]
 	fmt.Println("guid", guid)
@@ -454,9 +456,23 @@ func GetEducations(w http.ResponseWriter, r *http.Request) {
 
 
 func GetProjects(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("In Projects")
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	userGuid := ""
+	// CheckAuth 
+	status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		userGuid = utils.GetUserGuid(authorization)
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	vars := mux.Vars(r)
 	guid := vars["guid"]
-	fmt.Println("guid", guid)
+	// fmt.Println("guid", guid)
 	// get data against guid
 	DB := db.ConnectDB()
 	rows, err:= DB.Query("SELECT * FROM user_projects WHERE user_guid=? AND is_deleted = '0'",guid)
