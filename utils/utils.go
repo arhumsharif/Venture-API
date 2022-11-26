@@ -126,13 +126,13 @@ func GenerateSecretKey() string {
 }
 
 // Verify Function to check if token is still defined
-func CheckAuth(header string, w http.ResponseWriter, r *http.Request) bool {
+func CheckAuth(header string, w http.ResponseWriter, r *http.Request) (string, string,bool) {
     // var jwtKey = []byte("secret_key")
 
     // getting token and user guid
     separateHeaders := strings.Fields(header)
-    if len(separateHeaders) <= 1 {
-        return false
+    if len(separateHeaders) < 3 {
+        return "", "", false
     }
     token := separateHeaders[1]
     userGuid := separateHeaders[2]
@@ -142,7 +142,7 @@ func CheckAuth(header string, w http.ResponseWriter, r *http.Request) bool {
 
     // Search Secret key
     DB := db.ConnectDB()
-	rows, queryerr:= DB.Query("SELECT secret_key FROM user_details WHERE user_guid = ?",userGuid)
+	rows, queryerr:= DB.Query("SELECT secret_key, user_guid, role FROM user_details WHERE user_guid = ?",userGuid)
 	if queryerr != nil {
 		fmt.Println("Error:", queryerr)
 	}
@@ -150,7 +150,7 @@ func CheckAuth(header string, w http.ResponseWriter, r *http.Request) bool {
 	var myuser models.User
 	for rows.Next() {
 
-        newerr := rows.Scan(&myuser.Secret_Key)
+        newerr := rows.Scan(&myuser.Secret_Key, &myuser.User_Guid, &myuser.Role)
         if newerr != nil {
             fmt.Println("err:", newerr) 
         }
@@ -170,26 +170,30 @@ func CheckAuth(header string, w http.ResponseWriter, r *http.Request) bool {
 		if err == jwt.ErrSignatureInvalid {
             fmt.Println("Error in Signature")
             fmt.Println(err)
-			return false
+            return "", "", false
 		}
         fmt.Println("Some other error")
         fmt.Println(err)
-		return false
+        return "", "", false
 	}
 
 	if !tkn.Valid {
         fmt.Println("Token not valid")
-		return false
+        return "", "", false
 	}
 
-    return true
+    return myuser.User_Guid, myuser.Role, true
 	// w.Write([]byte(fmt.Sprintf("Hello, %s", claims.Username)))
 }
 
 //  Get UserGuid
-func GetUserGuid(header string) string {
-    // getting token and user guid
-    separateHeaders := strings.Fields(header)
-    userGuid := separateHeaders[2]
-    return userGuid
+func ValidateRole(role string, rolesToCheck[] string) bool {
+    if len(role) > 0 && len(rolesToCheck) > 0 {
+        for i := 0; i < len(rolesToCheck); i++ {
+            if rolesToCheck[i] == role {
+                return true
+            }
+        }
+    }
+    return false
 }

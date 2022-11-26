@@ -27,7 +27,14 @@ func HandleRequests() {
 	Router := mux.NewRouter().StrictSlash(true)
 
 
-	// start server listen
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "DELETE", "POST", "PUT", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+		AllowCredentials: false,
+	})
+
+	handler := c.Handler(Router)
 	// with error handling
 	
 	// Router.HandleFunc("/", controllers.PrintHello)
@@ -42,10 +49,10 @@ func HandleRequests() {
 	Router.HandleFunc("/job/skill", controllers.InsertJobSkill).Methods("POST")
 
 	// Get Routes
-	Router.HandleFunc("/user/{guid}", controllers.GetUsers).Methods("GET")
-	Router.HandleFunc("/projects/{guid}", controllers.GetProjects).Methods("GET")
-	Router.HandleFunc("/education/{guid}", controllers.GetEducations).Methods("GET")
-	Router.HandleFunc("/experience/{guid}", controllers.GetExperiences).Methods("GET")
+	Router.HandleFunc("/user", controllers.GetUsers).Methods("GET")
+	Router.HandleFunc("/projects", controllers.GetProjects).Methods("GET")
+	Router.HandleFunc("/education", controllers.GetEducations).Methods("GET")
+	Router.HandleFunc("/experience", controllers.GetExperiences).Methods("GET")
 	Router.HandleFunc("/job", controllers.GetJobs).Methods("GET")
 	Router.HandleFunc("/skill", controllers.GetSkills).Methods("GET")
 	Router.HandleFunc("/user/job/{guid}", controllers.GetUserJobs).Methods("GET")
@@ -64,13 +71,7 @@ func HandleRequests() {
 	Router.HandleFunc("/education", controllers.UpdateEducation).Methods("PUT")
 	Router.HandleFunc("/experience", controllers.UpdateExperience).Methods("PUT")
 	Router.HandleFunc("/projects", controllers.UpdateProject).Methods("PUT")	
-
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "DELETE", "POST", "PUT"},
-	})
-
-	handler := c.Handler(Router)
+	
+	// start server listen
 	log.Fatal(http.ListenAndServe(":8000", handler))
 }

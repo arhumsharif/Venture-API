@@ -14,6 +14,7 @@ type User struct{
 	City string `json:"city"`
 	Country string `json:"country"`
 	DOB string `json:"dob"`
+	Role string `json:"role"`
 	Secret_Key string `json:"secret_key"`
 }
 

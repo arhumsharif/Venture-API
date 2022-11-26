@@ -142,6 +142,27 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertEducation(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // education guid
 	education_id := guid.String()	
@@ -154,7 +175,7 @@ func InsertEducation(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_education (education_guid, user_guid, school, user_from, user_to, degree) VALUES (" + "'" +  education_id + "'" + "," + "'" + myEducation.User_Guid + "'" + "," + "'" + myEducation.School + "'" + "," + "'" + myEducation.User_From + "'"  + "," + "'" + myEducation.User_To + "'" + "," + "'" + myEducation.Degree + "'" + ");")
+	insert, err := DB.Query("INSERT INTO user_education (education_guid, user_guid, school, user_from, user_to, degree) VALUES (" + "'" +  education_id + "'" + "," + "'" + userGuid + "'" + "," + "'" + myEducation.School + "'" + "," + "'" + myEducation.User_From + "'"  + "," + "'" + myEducation.User_To + "'" + "," + "'" + myEducation.Degree + "'" + ");")
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -175,6 +196,27 @@ func InsertEducation(w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertExperience(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // education guid
 	experience_id := guid.String()	
@@ -187,7 +229,7 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_experience (experience_guid, user_guid, job_title, job_description, company_name, user_from, user_to) VALUES (" + "'" +  experience_id + "'" + "," + "'" + myExperience.User_Guid + "'" + "," + "'" + myExperience.Job_Title + "'" + "," + "'" + myExperience.Job_Description + "'"  + "," + "'" + myExperience.Company_Name + "'" + "," + "'" + myExperience.User_From + "'" + "," + "'" + myExperience.User_To + "'" + ");")
+	insert, err := DB.Query("INSERT INTO user_experience (experience_guid, user_guid, job_title, job_description, company_name, user_from, user_to) VALUES (" + "'" +  experience_id + "'" + "," + "'" + userGuid + "'" + "," + "'" + myExperience.Job_Title + "'" + "," + "'" + myExperience.Job_Description + "'"  + "," + "'" + myExperience.Company_Name + "'" + "," + "'" + myExperience.User_From + "'" + "," + "'" + myExperience.User_To + "'" + ");")
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -208,6 +250,27 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
 }
 
 func InsertProject(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // education guid
 	project_id := guid.String()	
@@ -220,7 +283,7 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_projects (project_guid, user_guid, title, description, technologies) VALUES (" + "'" +  project_id + "'" + "," + "'" + myProject.User_Guid + "'" + "," + "'" + myProject.Title + "'" + "," + "'" + myProject.Description + "'"  + "," + "'" + myProject.Technologies + "'"  + ");")
+	insert, err := DB.Query("INSERT INTO user_projects (project_guid, user_guid, title, description, technologies) VALUES (" + "'" +  project_id + "'" + "," + "'" + userGuid + "'" + "," + "'" + myProject.Title + "'" + "," + "'" + myProject.Description + "'"  + "," + "'" + myProject.Technologies + "'"  + ");")
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -310,6 +373,27 @@ func InsertSkill(w http.ResponseWriter, r *http.Request) {
 
 
 func InsertUserJob(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // job guid
 	user_job_id := guid.String()	
@@ -322,7 +406,7 @@ func InsertUserJob(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, myUserJob.User_Guid, myUserJob.Job_Type_Guid, myUserJob.Experience)
+	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, userGuid, myUserJob.Job_Type_Guid, myUserJob.Experience)
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -345,6 +429,27 @@ func InsertUserJob(w http.ResponseWriter, r *http.Request) {
 
 
 func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // job guid
 	job_skill_id := guid.String()	
@@ -385,24 +490,28 @@ func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	// get headers
 	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
 	userGuid := ""
+	role := ""
 	// CheckAuth 
-	status := utils.CheckAuth(authorization, w, r)
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
 	if !status {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	} else {
-		userGuid = utils.GetUserGuid(authorization)
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 	}
-
 	fmt.Println("User Guid in Main: ", userGuid)
-
-	vars := mux.Vars(r)
-	guid := vars["guid"]
-	fmt.Println("guid", guid)
 	// get data against guid
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_details WHERE user_guid=?",guid)
+	rows, err:= DB.Query("SELECT * FROM user_details WHERE user_guid=?",userGuid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -418,12 +527,29 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 func GetExperiences(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("In Experience")
-	vars := mux.Vars(r)
-	guid := vars["guid"]
-	fmt.Println("guid", guid)
-	// get data against guid
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_experience WHERE user_guid=? AND is_deleted = '0'",guid)
+	rows, err:= DB.Query("SELECT * FROM user_experience WHERE user_guid=? AND is_deleted = '0'",userGuid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -437,12 +563,29 @@ func GetExperiences(w http.ResponseWriter, r *http.Request) {
 
 func GetEducations(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("In Education")
-	vars := mux.Vars(r)
-	guid := vars["guid"]
-	fmt.Println("guid", guid)
-	// get data against guid
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_education WHERE user_guid=? AND is_deleted = '0'",guid)
+	rows, err:= DB.Query("SELECT * FROM user_education WHERE user_guid=? AND is_deleted = '0'",userGuid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -459,23 +602,27 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("In Projects")
 	// get headers
 	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
 	userGuid := ""
+	role := ""
 	// CheckAuth 
-	status := utils.CheckAuth(authorization, w, r)
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
 	if !status {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	} else {
-		userGuid = utils.GetUserGuid(authorization)
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 	}
 	fmt.Println("User Guid in Main: ", userGuid)
-
-	vars := mux.Vars(r)
-	guid := vars["guid"]
-	// fmt.Println("guid", guid)
-	// get data against guid
 	DB := db.ConnectDB()
-	rows, err:= DB.Query("SELECT * FROM user_projects WHERE user_guid=? AND is_deleted = '0'",guid)
+	rows, err:= DB.Query("SELECT * FROM user_projects WHERE user_guid=? AND is_deleted = '0'",userGuid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -488,6 +635,28 @@ func GetProjects(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetJobs(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	DB := db.ConnectDB()
 	rows, err:= DB.Query("SELECT * FROM job_type")
 	if err != nil {
@@ -502,6 +671,28 @@ func GetJobs(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetSkills(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	DB := db.ConnectDB()
 	rows, err:= DB.Query("SELECT * FROM skills")
 	if err != nil {
@@ -516,6 +707,28 @@ func GetSkills(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserJobs(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	vars := mux.Vars(r)
 	guid := vars["guid"]
 	fmt.Println("guid", guid)
@@ -534,6 +747,28 @@ func GetUserJobs(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetJobSkills(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	vars := mux.Vars(r)
 	guid := vars["guid"]
 	fmt.Println("guid", guid)
@@ -555,6 +790,27 @@ func GetJobSkills(w http.ResponseWriter, r *http.Request) {
 // ------------------------ Delete Routes ----------------------------
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -586,6 +842,28 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteEducation(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -617,6 +895,28 @@ func DeleteEducation(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteExperience(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -648,6 +948,28 @@ func DeleteExperience(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteProject(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -681,6 +1003,28 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 // ------------------- Put Routes ---------------------
 
 func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -691,7 +1035,7 @@ func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("UPDATE user_details set name = ?, phone = ?, address = ?, city = ?, country = ?, dob = ? WHERE user_guid = ? ", myUser.Name, myUser.Phone, myUser.Address, myUser.City, myUser.Country, myUser.DOB ,myUser.User_Guid)
+	insert, err := DB.Query("UPDATE user_details set name = ?, phone = ?, address = ?, city = ?, country = ?, dob = ? WHERE user_guid = ? ", myUser.Name, myUser.Phone, myUser.Address, myUser.City, myUser.Country, myUser.DOB ,userGuid)
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -743,6 +1087,28 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateEducation(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -774,6 +1140,27 @@ func UpdateEducation(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateExperience(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
@@ -805,6 +1192,28 @@ func UpdateExperience(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateProject(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
 	// Get Body
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
