@@ -1,17 +1,13 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	// "log"
 	"net/http"
 	"main/models"
 	"main/utils"
-	// "strings"
-	// "sync"
-
-	// "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"main/db"
     _ "github.com/go-sql-driver/mysql"
@@ -401,16 +397,20 @@ func InsertUserJob(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myUserJob models.UserJob
 
-	json.Unmarshal(reqBody, &myUserJob)
-	json.NewEncoder(w).Encode(myUserJob)
+	b := new(bytes.Buffer)
 
+	json.Unmarshal(reqBody, &myUserJob)
+	json.NewEncoder(b).Encode(myUserJob)
+	// err := json.NewDecoder(r.Body).Decode(&credentials)
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, userGuid, myUserJob.Job_Type_Guid, myUserJob.Experience)
+	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, userGuid, myUserJob.Job_Type_Guid, 0)
 
     // // if there is an error inserting, handle it
     if err != nil {
         fmt.Println("Error:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
     }
     // be careful deferring Queries if you are using transactions
 	// Send Response
@@ -422,9 +422,13 @@ func InsertUserJob(w http.ResponseWriter, r *http.Request) {
 
 	if resErr != nil {
 		fmt.Println("Error:", resErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
+	fmt.Println(string(jsonResponse))
 	w.Write(jsonResponse)
     defer insert.Close()
+	return
 }
 
 
@@ -450,24 +454,31 @@ func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Println("User Guid in Main: ", userGuid)
-	// Get Body
-	guid := uuid.New() // job guid
-	job_skill_id := guid.String()	
+	// Get Body	
 	var DB *sql.DB
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myJobSkill models.JobSkill
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myJobSkill)
-	json.NewEncoder(w).Encode(myJobSkill)
+	json.NewEncoder(b).Encode(myJobSkill)
 
 	// Perform Query
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO job_skill (job_skill_guid, user_job_guid, skill_guid, experience) VALUES (?, ?, ?, ?)", job_skill_id, myJobSkill.User_Job_Guid, myJobSkill.Skill_Guid, myJobSkill.Experience)
+	for i := 0; i < len(myJobSkill.Skill_Guid); i++ {
+		guid := uuid.New() // job guid
+		job_skill_id := guid.String()
 
-    // // if there is an error inserting, handle it
-    if err != nil {
-        fmt.Println("Error:", err)
-    }
+		insert, err := DB.Query("INSERT INTO job_skill (job_skill_guid, user_job_guid, skill_guid, experience) VALUES (?, ?, ?, ?)", job_skill_id, myJobSkill.User_Job_Guid, myJobSkill.Skill_Guid[i], myJobSkill.Experience)
+		
+		// // if there is an error inserting, handle it
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
+		defer insert.Close()
+	}
+
     // be careful deferring Queries if you are using transactions
 	// Send Response
 	var response models.Response
@@ -479,7 +490,6 @@ func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error:", resErr)
 	}
 	w.Write(jsonResponse)
-    defer insert.Close()
 }
 
 

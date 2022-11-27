@@ -66,7 +66,7 @@ type UserJob struct {
 type JobSkill struct {
 	Job_Skill_Guid string `json:"job_skill_guid"`
 	User_Job_Guid string `json:"user_job_guid"`
-	Skill_Guid string `json:"skill_guid"`
+	Skill_Guid []string `json:"skill_guid"`
 	Experience int `json:"experience"`
 }
 
