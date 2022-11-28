@@ -73,6 +73,7 @@ type JobSkill struct {
 type Response struct {
 	Message string `json:"message"`
 	Id string `json:"id"`
+	Role *string `json:"role"`
 }
 
 // credentials 

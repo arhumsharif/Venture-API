@@ -31,7 +31,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 	// run query to check for credentials
 	DB := db.ConnectDB()
-	rows, queryerr:= DB.Query("SELECT user_guid, email, password, secret_key FROM user_details WHERE email=? AND password=?",credentials.Email, credentials.Password)
+	rows, queryerr:= DB.Query("SELECT user_guid, email, password, secret_key, role FROM user_details WHERE email=? AND password=?",credentials.Email, credentials.Password)
 	if queryerr != nil {
 		fmt.Println("Error:", queryerr)
 	}
@@ -39,7 +39,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	var myuser models.User
 	for rows.Next() {
 
-        err = rows.Scan(&myuser.User_Guid, &myuser.Email, &myuser.Password, &myuser.Secret_Key)
+        err = rows.Scan(&myuser.User_Guid, &myuser.Email, &myuser.Password, &myuser.Secret_Key, &myuser.Role)
         if err != nil {
             fmt.Println("err:", err) // proper error handling instead of panic in your app
         }
@@ -87,6 +87,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	// Send Response
 	var response models.Response
 	response.Message = tokenString
+	response.Role = &myuser.Role
 	var jsonResponse []byte
 	jsonResponse, resErr := json.Marshal(response)
 
@@ -112,8 +113,10 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myUser models.User
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myUser)
-	json.NewEncoder(w).Encode(myUser)
+	json.NewEncoder(b).Encode(myUser)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -166,8 +169,10 @@ func InsertEducation(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myEducation models.Education
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myEducation)
-	json.NewEncoder(w).Encode(myEducation)
+	json.NewEncoder(b).Encode(myEducation)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -220,8 +225,10 @@ func InsertExperience(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myExperience models.Experience
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myExperience)
-	json.NewEncoder(w).Encode(myExperience)
+	json.NewEncoder(b).Encode(myExperience)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -274,8 +281,10 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myProject models.Project
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myProject)
-	json.NewEncoder(w).Encode(myProject)
+	json.NewEncoder(b).Encode(myProject)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -308,8 +317,10 @@ func InsertJob(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myJob models.Job
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myJob)
-	json.NewEncoder(w).Encode(myJob)
+	json.NewEncoder(b).Encode(myJob)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -342,8 +353,10 @@ func InsertSkill(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var mySkill models.Skill
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &mySkill)
-	json.NewEncoder(w).Encode(mySkill)
+	json.NewEncoder(b).Encode(mySkill)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -403,8 +416,9 @@ func InsertUserJob(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(b).Encode(myUserJob)
 	// err := json.NewDecoder(r.Body).Decode(&credentials)
 	// Perform Query
+	fmt.Println("Agaya bhai", myUserJob.Experience)
 	DB = db.ConnectDB()
-	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, userGuid, myUserJob.Job_Type_Guid, 0)
+	insert, err := DB.Query("INSERT INTO user_job (user_job_guid, user_guid, job_type_guid, experience) VALUES (?, ?, ?, ?)", user_job_id, userGuid, myUserJob.Job_Type_Guid, myUserJob.Experience)
 
     // // if there is an error inserting, handle it
     if err != nil {
@@ -826,8 +840,10 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myUser models.User
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myUser)
-	json.NewEncoder(w).Encode(myUser)
+	json.NewEncoder(b).Encode(myUser)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -879,8 +895,10 @@ func DeleteEducation(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myEducation models.Education
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myEducation)
-	json.NewEncoder(w).Encode(myEducation)
+	json.NewEncoder(b).Encode(myEducation)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -932,8 +950,11 @@ func DeleteExperience(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myExperience models.Experience
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myExperience)
-	json.NewEncoder(w).Encode(myExperience)
+	json.NewEncoder(b).Encode(myExperience)
+
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -985,8 +1006,10 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myProject models.Project
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myProject)
-	json.NewEncoder(w).Encode(myProject)
+	json.NewEncoder(b).Encode(myProject)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -1040,8 +1063,10 @@ func UpdateUserDetail(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myUser models.User
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myUser)
-	json.NewEncoder(w).Encode(myUser)
+	json.NewEncoder(b).Encode(myUser)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -1071,8 +1096,10 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myUser models.User
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myUser)
-	json.NewEncoder(w).Encode(myUser)
+	json.NewEncoder(b).Encode(myUser)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -1124,8 +1151,10 @@ func UpdateEducation(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myEducation models.Education
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myEducation)
-	json.NewEncoder(w).Encode(myEducation)
+	json.NewEncoder(b).Encode(myEducation)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -1176,8 +1205,10 @@ func UpdateExperience(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myExperience models.Experience
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myExperience)
-	json.NewEncoder(w).Encode(myExperience)
+	json.NewEncoder(b).Encode(myExperience)
 
 	// Perform Query
 	DB = db.ConnectDB()
@@ -1229,8 +1260,10 @@ func UpdateProject(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var myProject models.Project
 
+	b := new(bytes.Buffer)
+
 	json.Unmarshal(reqBody, &myProject)
-	json.NewEncoder(w).Encode(myProject)
+	json.NewEncoder(b).Encode(myProject)
 
 	// Perform Query
 	DB = db.ConnectDB()
