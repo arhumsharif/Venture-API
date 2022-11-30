@@ -70,6 +70,11 @@ type JobSkill struct {
 	Experience int `json:"experience"`
 }
 
+type Technology struct {
+	Technology_Guid string `json:"technology_guid"`
+	Technology_Name string `json:"technology_name"`
+}
+
 type Response struct {
 	Message string `json:"message"`
 	Id string `json:"id"`

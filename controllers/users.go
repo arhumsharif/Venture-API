@@ -310,6 +310,27 @@ func InsertProject(w http.ResponseWriter, r *http.Request) {
 
 
 func InsertJob(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // job guid
 	job_id := guid.String()	
@@ -346,6 +367,27 @@ func InsertJob(w http.ResponseWriter, r *http.Request) {
 
 
 func InsertSkill(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
 	// Get Body
 	guid := uuid.New() // job guid
 	skill_id := guid.String()	
@@ -504,6 +546,62 @@ func InsertJobSkill(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error:", resErr)
 	}
 	w.Write(jsonResponse)
+}
+
+func InsertTechnology(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+	// Get Body
+	guid := uuid.New() // job guid
+	technology_id := guid.String()	
+	var DB *sql.DB
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	var myTechnology models.Technology
+
+	b := new(bytes.Buffer)
+
+	json.Unmarshal(reqBody, &myTechnology)
+	json.NewEncoder(b).Encode(myTechnology)
+
+	// Perform Query
+	DB = db.ConnectDB()
+	insert, err := DB.Query("INSERT INTO technologies (technology_guid, technology_name) VALUES (?, ?)", technology_id, myTechnology.Technology_Name)
+
+    // // if there is an error inserting, handle it
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+    // be careful deferring Queries if you are using transactions
+	// Send Response
+	var response models.Response
+	response.Message = "Success"
+	var jsonResponse []byte
+	jsonResponse, resErr := json.Marshal(response)
+
+	if resErr != nil {
+		fmt.Println("Error:", resErr)
+	}
+	w.Write(jsonResponse)
+    defer insert.Close()
 }
 
 
@@ -719,6 +817,83 @@ func GetSkills(w http.ResponseWriter, r *http.Request) {
 
 	DB := db.ConnectDB()
 	rows, err:= DB.Query("SELECT * FROM skills")
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+func GetTechnologies(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM technologies")
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	finalData, err := utils.SQLToJSON(rows)
+	if err != nil{
+		fmt.Println("Error:", err)
+	}
+	w.Write(finalData)
+	defer DB.Close()
+}
+
+func GetSpecificSkills(w http.ResponseWriter, r *http.Request) {
+	// get headers
+	authorization := r.Header.Get("Authorization")
+	// Roles Defined
+	rolesToCheck := [] string {"user", "admin"}
+	// -------------
+	userGuid := ""
+	role := ""
+	// CheckAuth 
+	userGuid, role, status := utils.CheckAuth(authorization, w, r)
+	if !status {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else {
+		roleStatus := utils.ValidateRole(role, rolesToCheck)
+		
+		if !roleStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+	fmt.Println("User Guid in Main: ", userGuid)
+
+	vars := mux.Vars(r)
+	guid := vars["guid"]
+	fmt.Println("guid", guid)
+	// get data against guid
+
+	DB := db.ConnectDB()
+	rows, err:= DB.Query("SELECT * FROM skills where job_type_guid = ?", guid)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}

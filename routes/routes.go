@@ -45,6 +45,7 @@ func HandleRequests() {
 	Router.HandleFunc("/projects", controllers.InsertProject).Methods("POST")
 	Router.HandleFunc("/job", controllers.InsertJob).Methods("POST")
 	Router.HandleFunc("/skill", controllers.InsertSkill).Methods("POST")
+	Router.HandleFunc("/technology", controllers.InsertTechnology).Methods("POST")
 	Router.HandleFunc("/user/job", controllers.InsertUserJob).Methods("POST")
 	Router.HandleFunc("/job/skill", controllers.InsertJobSkill).Methods("POST")
 
@@ -55,6 +56,8 @@ func HandleRequests() {
 	Router.HandleFunc("/experience", controllers.GetExperiences).Methods("GET")
 	Router.HandleFunc("/job", controllers.GetJobs).Methods("GET")
 	Router.HandleFunc("/skill", controllers.GetSkills).Methods("GET")
+	Router.HandleFunc("/admin/job/skill/{guid}", controllers.GetSpecificSkills).Methods("GET")
+	Router.HandleFunc("/technology", controllers.GetTechnologies).Methods("GET")
 	Router.HandleFunc("/user/job/{guid}", controllers.GetUserJobs).Methods("GET")
 	Router.HandleFunc("/job/skill/{guid}", controllers.GetJobSkills).Methods("GET")
 	// log.Fatal(http.ListenAndServe(":3000", Router))
